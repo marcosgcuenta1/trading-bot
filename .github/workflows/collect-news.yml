@@ -1,0 +1,51 @@
+name: Recolectar noticias cripto
+
+# Acumula noticias en data/news.csv para el forward-test del experimento.
+# No necesita secrets: solo lee feeds RSS públicos.
+
+on:
+  schedule:
+    # Cada 30 min: ~1.440 min/mes, entra en el plan gratis de repo privado
+    # (2.000 min/mes). Suficiente: medimos drift a 1-24h, no a minutos.
+    # GitHub puede retrasar el cron en horas punta; es normal.
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}  # permite lanzarlo a mano desde la pestaña Actions
+
+# Necesario para que el workflow pueda hacer commit del CSV actualizado.
+permissions:
+  contents: write
+
+concurrency:
+  # Evita que dos ejecuciones se pisen al hacer commit a la vez.
+  group: recolectar-noticias
+  cancel-in-progress: false
+
+jobs:
+  recolectar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repo
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Recoger noticias
+        run: python scripts/collect_news.py
+
+      - name: Guardar (commit del CSV si hay cambios)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/news.csv
+          if git diff --staged --quiet; then
+            echo "Sin noticias nuevas; nada que commitear."
+          else
+            git commit -m "datos: noticias recogidas $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi

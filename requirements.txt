@@ -1,0 +1,18 @@
+# Núcleo: librería unificada para hablar con 100+ exchanges con el mismo código.
+# Empezamos en Binance Testnet; migrar a Kraken/Coinbase (MiCA) es cambiar config, no código.
+ccxt>=4.4.0
+
+# Datos y cálculo de indicadores
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Carga de credenciales desde .env (nunca en el código)
+python-dotenv>=1.0.0
+
+# --- Detección de noticias / sentimiento ---
+# Lectura de feeds RSS de medios cripto
+feedparser>=6.0.0
+# Análisis de sentimiento ligero (lexicón, sin modelos pesados)
+vaderSentiment>=3.3.2
+# Peticiones HTTP a APIs de noticias
+requests>=2.28.0

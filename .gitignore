@@ -1,0 +1,21 @@
+# Credenciales: JAMÁS subir esto a git
+.env
+
+# Entorno virtual
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+logs/
+*.log
+
+# Datos: ignoramos la carpeta menos el CSV acumulado de noticias (lo versiona
+# GitHub Actions para que el forward-test persista entre ejecuciones).
+data/*
+!data/news.csv
